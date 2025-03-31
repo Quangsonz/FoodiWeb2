@@ -8,10 +8,13 @@ const useAdmin = () => {
     const axiosSecure = useAxiosSecure();
     const { refetch, data: isAdmin, isPending: isAdminLoading} = useQuery({
         queryKey: [user?.email, 'isAdmin'],
+        enabled: !!user?.email,  // Only run query if user email exists
         queryFn: async () => {
-           const res = await axiosSecure.get(`users/admin/${user?.email}`)
-           console.log(res.data)
-            return res.data?.admin;
+           const res = await axiosSecure.get(`/api/v1/users/admin/${user?.email}`)
+           console.log("API Response:", res)
+           console.log("User email:", user?.email)
+           console.log("Is Admin:", res.data)
+            return res.data;  // Backend returns boolean
         }
     })
   

@@ -39,6 +39,14 @@ const sharedLinks = (
 const DashboardLayout = () => {
   const {loading} = useAuth()
   const [isAdmin, isAdminLoading] = useAdmin()
+  
+  // Show loading state while checking admin status
+  if (isAdminLoading) {
+    return <div className="h-screen flex justify-center items-center">
+      <span className="loading loading-spinner loading-lg"></span>
+    </div>
+  }
+
   return (
     <div>
     {

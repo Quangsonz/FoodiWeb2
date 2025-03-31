@@ -2,29 +2,68 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { FaTrashAlt, FaUser, FaUsers } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
 const Users = () => {
   const axiosSecure = useAxiosSecure();
   const { refetch, data: users = [] } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/users");
+      const res = await axiosSecure.get("/api/v1/users");
       return res.data;
     },
   });
   // console.log(users);
   const handleMakeAdmin = (user) => {
-    axiosSecure.patch(`/users/admin/${user._id}`).then((res) => {
-      alert(`${user.name} is now admin`);
-      refetch();
+    axiosSecure.put(`/api/v1/users/admin/${user._id}`).then((res) => {
+      if(res.data) {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: `${user.name} is now an admin!`,
+          showConfirmButton: false,
+          timer: 1500
+        });
+        refetch();
+      }
+    }).catch(error => {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
     });
   };
 
   const handleDeleteUser = user => {
-    axiosSecure.delete(`/users/${user._id}`).then(res => {
-      alert(`${user.name} is removed from database`);
-      refetch();
-    })
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure.delete(`/api/v1/users/${user._id}`).then(res => {
+          if(res.data) {
+            Swal.fire({
+              title: "Deleted!",
+              text: "User has been deleted.",
+              icon: "success"
+            });
+            refetch();
+          }
+        }).catch(error => {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!",
+          });
+        });
+      }
+    });
   }
   return (
     <div>
@@ -54,7 +93,7 @@ const Users = () => {
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>
-                    {user.role === "admin" ? (
+                    {user.role === "ADMIN" ? (
                       "Admin"
                     ) : (
                       <button
