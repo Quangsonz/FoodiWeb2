@@ -44,7 +44,7 @@ const Signup = () => {
     setErrorMessage("");
     
     try {
-      // Tạo user với Firebase
+      // Tạo user với Firebase trước
       const result = await createUser(data.email, data.password);
       const user = result.user;
 
@@ -52,11 +52,21 @@ const Signup = () => {
       await updateUserProfile(data.name, data.photoURL);
 
       // Tạo user trong database
-      const userInfo = {
-        name: data.name,
-        email: data.email,
-      };
-      await axiosPublic.post("/users", userInfo);
+      try {
+        await axiosPublic.post("/users", {
+          name: data.name,
+          email: data.email,
+          password: data.password // Password sẽ được mã hóa ở backend
+        });
+      } catch (error) {
+        // Nếu tạo user trong database thất bại, xóa user Firebase
+        await user.delete();
+        
+        if (error.response && error.response.status === 409) {
+          throw new Error("Email already exists in database");
+        }
+        throw error;
+      }
 
       // Tạo JWT token
       await generateJwtToken(data.email);
@@ -76,12 +86,20 @@ const Signup = () => {
       let errorMsg = "An error occurred during signup";
       
       if (error.code === "auth/email-already-in-use") {
-        errorMsg = "Email is already registered";
+        errorMsg = "Email is already registered with Firebase";
+      } else if (error.message === "Email already exists in database") {
+        errorMsg = "Email is already registered in our system";
       } else if (error.code === "auth/weak-password") {
         errorMsg = "Password should be at least 6 characters";
       }
       
       setErrorMessage(errorMsg);
+      
+      Swal.fire({
+        icon: "error",
+        title: "Signup Failed",
+        text: errorMsg
+      });
     } finally {
       setLoading(false);
     }
