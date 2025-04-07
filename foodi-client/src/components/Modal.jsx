@@ -26,7 +26,6 @@ const Modal = () => {
     const password = data.password;
     login(email, password)
       .then((result) => {
-        // Signed in
         const user = result.user;
         const userInfor = {
           name: data.name,
@@ -35,19 +34,37 @@ const Modal = () => {
         axios
           .post("http://localhost:8080/api/v1/users", userInfor)
           .then((response) => {
-            // console.log(response);
-            alert("Signin successful!");
+            // Close modal after successful login
+            document.getElementById("my_modal_5").close();
+            // Show success message
+            alert("Login successful!");
             navigate(from, { replace: true });
+          })
+          .catch((error) => {
+            console.error("Error saving user info:", error);
+            if (error.response?.status === 409) {
+              // User already exists, still consider it a success
+              document.getElementById("my_modal_5").close();
+              alert("Login successful!");
+              navigate(from, { replace: true });
+            } else {
+              seterrorMessage("An error occurred. Please try again.");
+            }
           });
-        // console.log(user);
-        // ...
       })
       .catch((error) => {
-        const errorMessage = error.message;
-        seterrorMessage("Please provide valid email & password!");
+        console.error("Login error:", error);
+        if (error.code === "auth/user-not-found") {
+          seterrorMessage("No account found with this email");
+        } else if (error.code === "auth/wrong-password") {
+          seterrorMessage("Invalid password");
+        } else if (error.code === "auth/invalid-email") {
+          seterrorMessage("Invalid email format");
+        } else {
+          seterrorMessage("Login failed. Please try again.");
+        }
       });
-      reset()
-
+    reset();
   };
 
   // login with google
@@ -62,12 +79,27 @@ const Modal = () => {
         axios
           .post("http://localhost:8080/api/v1/users", userInfor)
           .then((response) => {
-            // console.log(response);
-            alert("Signin successful!");
+            // Close modal after successful Google login
+            document.getElementById("my_modal_5").close();
+            alert("Login successful!");
             navigate("/");
+          })
+          .catch((error) => {
+            console.error("Error saving user info:", error);
+            if (error.response?.status === 409) {
+              // User already exists, still consider it a success
+              document.getElementById("my_modal_5").close();
+              alert("Login successful!");
+              navigate("/");
+            } else {
+              seterrorMessage("An error occurred. Please try again.");
+            }
           });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.error("Google login error:", error);
+        seterrorMessage("Failed to login with Google");
+      });
   };
 
   return (

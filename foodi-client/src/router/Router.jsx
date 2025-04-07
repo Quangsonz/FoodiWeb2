@@ -14,6 +14,9 @@ import Users from "../pages/dashboard/admin/Users";
 import AddMenu from "../pages/dashboard/admin/AddMenu";
 import ManageItems from "../pages/dashboard/admin/ManageItems";
 import UpdateMenu from "../pages/dashboard/admin/UpdateMenu";
+import ChangePassword from "../pages/dashboard/ChangePassword";
+import Contact from "../pages/Contact/Contact";
+import ContactMessages from "../pages/dashboard/admin/ContactMessages";
 
 const router = createBrowserRouter([
     {
@@ -29,12 +32,24 @@ const router = createBrowserRouter([
           element: <Menu/>
         },
         {
+          path: "/menu/:category",
+          element: <Menu/>
+        },
+        {
+          path: "/contact",
+          element: <Contact/>
+        },
+        {
           path: "/order",
           element:<PrivateRoute><Order/></PrivateRoute>
         },
         {
           path: "/update-profile",
-          element: <UserProfile/>
+          element: <PrivateRoute><UserProfile/></PrivateRoute>
+        },
+        {
+          path: "/change-password",
+          element: <PrivateRoute><ChangePassword/></PrivateRoute>
         },
         {
           path: "/cart-page",
@@ -74,6 +89,10 @@ const router = createBrowserRouter([
           path: "update-menu/:id",
           element: <UpdateMenu/>,
           loader: ({params}) => fetch(`http://localhost:8080/api/v1/menu/${params.id}`)
+        },
+        {
+          path: "contact-messages",
+          element: <ContactMessages/>
         }
       ]
     }

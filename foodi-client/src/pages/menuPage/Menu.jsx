@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Cards from "../../components/Cards";
 import { FaFilter } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 
 const Menu = () => {
   const [menu, setMenu] = useState([]);
@@ -9,6 +10,7 @@ const Menu = () => {
   const [sortOption, setSortOption] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,20 +19,36 @@ const Menu = () => {
         if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
         const data = await response.json();
         setMenu(data);
-        setFilteredItems(data);
+        
+        // Get category from URL state or path
+        const categoryFromState = location.state?.category;
+        const categoryFromPath = location.pathname.split('/').pop();
+        const initialCategory = categoryFromState || 
+                              (categoryFromPath === "menu" ? "all" : categoryFromPath) || 
+                              "all";
+        
+        if (initialCategory === "all") {
+          setFilteredItems(data);
+        } else {
+          const filtered = data.filter(
+            (item) => item.category.toLowerCase() === initialCategory.toLowerCase()
+          );
+          setFilteredItems(filtered);
+        }
+        setSelectedCategory(initialCategory);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [location]);
 
   const filterItems = (category) => {
     const filtered =
       category === "all"
         ? menu
-        : menu.filter((item) => item.category === category);
+        : menu.filter((item) => item.category.toLowerCase() === category.toLowerCase());
 
     setFilteredItems(filtered);
     setSelectedCategory(category);
@@ -157,7 +175,7 @@ const Menu = () => {
 
         <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-4">
           {currentItems.map((item) => (
-            <Cards key={item._id} item={item} />
+            <Cards key={item.id} item={item} />
           ))}
         </div>
       </div>
@@ -165,7 +183,7 @@ const Menu = () => {
       <div className="flex justify-center my-8 flex-wrap gap-2">
         {Array.from({ length: Math.ceil(filteredItems.length / itemsPerPage) }).map((_, index) => (
           <button
-            key={index + 1}
+            key={`page-${index + 1}`}
             onClick={() => paginate(index + 1)}
             className={`mx-1 px-3 py-1 rounded-full ${
               currentPage === index + 1 ? "bg-green text-white" : "bg-gray-200"

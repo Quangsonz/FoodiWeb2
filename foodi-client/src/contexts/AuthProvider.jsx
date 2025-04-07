@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import { createContext } from 'react';
-import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
+import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import app from '../firebase/firebase.config';
@@ -41,6 +41,18 @@ const AuthProvider = ({children}) => {
           })
     }
 
+    // update password
+    const updateUserPassword = async (currentPassword, newPassword) => {
+        const user = auth.currentUser;
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        
+        // Re-authenticate user
+        await reauthenticateWithCredential(user, credential);
+        
+        // Update password
+        return updatePassword(user, newPassword);
+    }
+
     useEffect( () =>{
         const unsubscribe = onAuthStateChanged(auth, currentUser =>{
             // console.log(currentUser);
@@ -73,7 +85,8 @@ const AuthProvider = ({children}) => {
         login, 
         logOut,
         signUpWithGmail,
-        updateUserProfile
+        updateUserProfile,
+        updatePassword: updateUserPassword
     }
 
     return (

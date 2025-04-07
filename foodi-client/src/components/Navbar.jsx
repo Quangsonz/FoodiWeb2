@@ -29,10 +29,19 @@ const Navbar = () => {
     };
   }, []);
 
+  const categories = [
+    { name: "All", path: "/menu" },
+    { name: "Salad", path: "/menu/salad" },
+    { name: "Pizza", path: "/menu/pizza" },
+    { name: "Soup", path: "/menu/soup" },
+    { name: "Dessert", path: "/menu/dessert" },
+    { name: "Drinks", path: "/menu/drinks" }
+  ];
+
   const navItems = (
     <>
       <li>
-        <a href="/" className="text-green">
+        <a href="/">
           Home
         </a>
       </li>
@@ -40,15 +49,17 @@ const Navbar = () => {
         <details>
           <summary>Menu</summary>
           <ul className="p-2">
-            <li>
-              <a href="/menu">All</a>
-            </li>
-            <li>
-              <a>Salad</a>
-            </li>
-            <li>
-              <a>Pizza</a>
-            </li>
+            {categories.map((category, index) => (
+              <li key={index}>
+                <Link 
+                  to={category.path}
+                  state={{ category: category.name !== "All" ? category.name.toLowerCase() : "all" }}
+                  className="hover:text-green-500"
+                >
+                  {category.name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </details>
       </li>
@@ -69,7 +80,7 @@ const Navbar = () => {
         </details>
       </li>
       <li>
-        <a>Offers</a>
+        <Link to="/contact">Contact</Link>
       </li>
     </>
   );

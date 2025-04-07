@@ -9,6 +9,7 @@ import {
   FaRegUser,
   FaShoppingBag,
   FaUser,
+  FaEnvelope,
 } from "react-icons/fa";
 
 import logo from "/logo.png";
@@ -105,9 +106,14 @@ const DashboardLayout = () => {
               <FaEdit /> Manage Items
             </Link>
           </li>
-          <li className="mb-3">
+          <li>
             <Link to="/dashboard/users">
               <FaUser /> All Users
+            </Link>
+          </li>
+          <li className="mb-3">
+            <Link to="/dashboard/contact-messages">
+              <FaEnvelope /> Contact Messages
             </Link>
           </li>
 

@@ -7,9 +7,8 @@ import useCart from "../hooks/useCart";
 import axios from 'axios';
 
 const Cards = ({ item }) => {
-  const { name, image, price, recipe, _id, id } = item;
+  const { name, image, price, recipe, id } = item;
   console.log("Item received:", item);
-  console.log("_id value:", _id);
   console.log("id value:", id);
   
   const { user } = useContext(AuthContext);
@@ -25,7 +24,7 @@ const Cards = ({ item }) => {
   const handleAddToCart = () => {
     if (user && user.email) {
       const cartItem = {
-        menuItemId: id || _id,
+        menuItemId: id,
         name: name,
         quantity: 1,
         image: image,
@@ -106,19 +105,19 @@ const Cards = ({ item }) => {
       >
         <FaHeart className="w-5 h-5 cursor-pointer" />
       </div>
-      <Link to={`/menu/${item._id}`}>
+      <Link to={`/menu/${id}`}>
         <figure>
-          <img src={item.image} alt="Shoes" className="hover:scale-105 transition-all duration-300 md:h-72" />
+          <img src={image} alt={name} className="hover:scale-105 transition-all duration-300 md:h-72" />
         </figure>
       </Link>
       <div className="card-body">
-        <Link to={`/menu/${item._id}`}>
-          <h2 className="card-title">{item.name}!</h2>
+        <Link to={`/menu/${id}`}>
+          <h2 className="card-title">{name}!</h2>
         </Link>
         <p>{recipe || "Description of the item"}</p>
         <div className="card-actions justify-between items-center mt-2">
           <h5 className="font-semibold">
-            <span className="text-sm text-red">$ </span> {item.price}
+            <span className="text-sm text-red">$ </span> {price}
           </h5>
           <button onClick={handleAddToCart} className="btn bg-green text-white">
             Add to Cart
