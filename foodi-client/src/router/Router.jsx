@@ -17,6 +17,7 @@ import UpdateMenu from "../pages/dashboard/admin/UpdateMenu";
 import ChangePassword from "../pages/dashboard/ChangePassword";
 import Contact from "../pages/Contact/Contact";
 import ContactMessages from "../pages/dashboard/admin/ContactMessages";
+import Checkout from "../pages/menuPage/Checkout";
 
 const router = createBrowserRouter([
     {
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
         {
           path: "/cart-page",
           element: <CartPage/>
+        },
+        {
+          path: "/checkout",
+          element: <PrivateRoute><Checkout/></PrivateRoute>
         }
       ]
     },
