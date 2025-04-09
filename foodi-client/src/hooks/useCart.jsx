@@ -7,11 +7,10 @@ import { useNavigate } from 'react-router-dom';
 const useCart = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
-    const [token, setToken] = useState(localStorage.getItem('access-token')); // Lưu token vào state
-    const [isRedirecting, setIsRedirecting] = useState(false); // Tránh redirect loop
+    const [token, setToken] = useState(localStorage.getItem('access-token'));
+    const [isRedirecting, setIsRedirecting] = useState(false);
 
     useEffect(() => {
-        // Cập nhật token từ localStorage khi component mount hoặc token thay đổi
         const storedToken = localStorage.getItem('access-token');
         setToken(storedToken);
     }, []);
@@ -45,9 +44,12 @@ const useCart = () => {
 
             console.log(`useCart - Fetching cart for ${user.email}`);
             const res = await fetch(`http://localhost:8080/api/v1/carts?email=${user.email}`, {
+                method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
+                credentials: 'include'
             });
 
             if (!res.ok) {
@@ -55,7 +57,7 @@ const useCart = () => {
                 if (res.status === 403 && !isRedirecting) {
                     setIsRedirecting(true);
                     localStorage.removeItem('access-token');
-                    setToken(null); // Cập nhật state
+                    setToken(null);
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -66,7 +68,7 @@ const useCart = () => {
                     navigate('/login');
                     throw new Error('Forbidden: Invalid token or email mismatch');
                 }
-                throw new Error('Failed to fetch cart');
+                throw new Error(`Failed to fetch cart: ${res.status} ${res.statusText}`);
             }
 
             const data = await res.json();
@@ -85,8 +87,8 @@ const useCart = () => {
                 });
             }
         },
-        enabled: !!user?.email && !!token && !isRedirecting, // Chỉ gọi khi có email, token và không đang redirect
-        retry: false, // Không retry nếu thất bại
+        enabled: !!user?.email && !!token && !isRedirecting,
+        retry: false,
     });
 
     return [cart, refetch, isLoading, error];

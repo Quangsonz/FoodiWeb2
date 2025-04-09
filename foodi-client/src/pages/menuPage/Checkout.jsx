@@ -70,26 +70,19 @@ const Checkout = () => {
       }
 
       const orderData = {
-        userId: user?.uid,
-        email: shippingInfo.email,
-        shippingAddress: {
-          fullName: shippingInfo.fullName,
-          phone: shippingInfo.phone,
-          address: shippingInfo.address,
-          province: shippingInfo.province,
-          district: shippingInfo.district,
-          note: shippingInfo.note,
-        },
+        userId: user?.email,
+        customerName: shippingInfo.fullName,
         items: cart.map(item => ({
-          productId: item._id,
+          menuId: item._id,
           name: item.name,
           quantity: item.quantity,
-          price: item.price,
-          image: item.image
+          price: item.price
         })),
-        totalAmount: orderTotal,
-        shippingFee: shippingFee,
-        paymentMethod: "cod",
+        total: orderTotal,
+        status: "pending",
+        createdAt: new Date(),
+        address: `${shippingInfo.address}, ${shippingInfo.district}, ${shippingInfo.province}`,
+        phone: shippingInfo.phone
       };
 
       const response = await axios.post(
@@ -113,8 +106,31 @@ const Checkout = () => {
           title: "Đặt hàng thành công!",
           text: "Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ liên hệ sớm nhất!",
           showConfirmButton: true,
+        }).then(() => {
+          // Chuyển đến trang xác nhận đơn hàng
+          navigate("/order-success", {
+            state: {
+              orderDetails: {
+                orderId: response.data.id || "67f69d0ee78d50463d2c0dae",
+                email: shippingInfo.email,
+                fullName: shippingInfo.fullName,
+                phone: shippingInfo.phone,
+                address: shippingInfo.address,
+                district: shippingInfo.district,
+                province: shippingInfo.province,
+                note: shippingInfo.note,
+                totalAmount: cartSubtotal,
+                shippingFee: shippingFee,
+                items: cart.map(item => ({
+                  name: item.name,
+                  price: parseFloat(item.price),
+                  quantity: item.quantity,
+                  image: item.image
+                }))
+              }
+            }
+          });
         });
-        navigate("/");
       }
     } catch (error) {
       Swal.fire({

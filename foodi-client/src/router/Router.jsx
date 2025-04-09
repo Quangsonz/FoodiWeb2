@@ -18,6 +18,7 @@ import ChangePassword from "../pages/dashboard/ChangePassword";
 import Contact from "../pages/Contact/Contact";
 import ContactMessages from "../pages/dashboard/admin/ContactMessages";
 import Checkout from "../pages/menuPage/Checkout";
+import OrderSuccess from "../pages/menuPage/OrderSuccess";
 
 const router = createBrowserRouter([
     {
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
         {
           path: "/checkout",
           element: <PrivateRoute><Checkout/></PrivateRoute>
+        },
+        {
+          path: "/order-success",
+          element: <PrivateRoute><OrderSuccess/></PrivateRoute>
         }
       ]
     },
