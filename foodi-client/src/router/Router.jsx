@@ -19,6 +19,7 @@ import Contact from "../pages/Contact/Contact";
 import ContactMessages from "../pages/dashboard/admin/ContactMessages";
 import Checkout from "../pages/menuPage/Checkout";
 import OrderSuccess from "../pages/menuPage/OrderSuccess";
+import ProductDetail from "../pages/menuPage/ProductDetail";
 
 const router = createBrowserRouter([
     {
@@ -34,8 +35,12 @@ const router = createBrowserRouter([
           element: <Menu/>
         },
         {
-          path: "/menu/:category",
+          path: "/menu/category/:category",
           element: <Menu/>
+        },
+        {
+          path: "/menu/item/:id",
+          element: <ProductDetail/>
         },
         {
           path: "/contact",
@@ -97,8 +102,7 @@ const router = createBrowserRouter([
         },
         {
           path: "update-menu/:id",
-          element: <UpdateMenu/>,
-          loader: ({params}) => fetch(`http://localhost:8080/api/v1/menu/${params.id}`)
+          element: <UpdateMenu/>
         },
         {
           path: "contact-messages",

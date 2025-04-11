@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Cards from "../../components/Cards";
 import { FaFilter } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const Menu = () => {
   const [menu, setMenu] = useState([]);
@@ -11,6 +11,8 @@ const Menu = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { category } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,12 +22,9 @@ const Menu = () => {
         const data = await response.json();
         setMenu(data);
         
-        // Get category from URL state or path
+        // Get category from URL params or state
         const categoryFromState = location.state?.category;
-        const categoryFromPath = location.pathname.split('/').pop();
-        const initialCategory = categoryFromState || 
-                              (categoryFromPath === "menu" ? "all" : categoryFromPath) || 
-                              "all";
+        const initialCategory = categoryFromState || category || "all";
         
         if (initialCategory === "all") {
           setFilteredItems(data);
@@ -42,9 +41,10 @@ const Menu = () => {
     };
 
     fetchData();
-  }, [location]);
+  }, [location, category]);
 
   const filterItems = (category) => {
+    navigate(`/menu/category/${category}`);
     const filtered =
       category === "all"
         ? menu
@@ -56,6 +56,7 @@ const Menu = () => {
   };
 
   const showAll = () => {
+    navigate('/menu');
     setFilteredItems(menu);
     setSelectedCategory("all");
     setCurrentPage(1);

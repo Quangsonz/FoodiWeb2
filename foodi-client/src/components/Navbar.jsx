@@ -6,6 +6,7 @@ import Profile from "./Profile";
 import { Link } from "react-router-dom";
 import useCart from "../hooks/useCart";
 import useAuth from "../hooks/useAuth";
+import SearchBar from "./SearchBar";
 
 const Navbar = () => {
   const [isSticky, setSticky] = useState(false);
@@ -31,11 +32,11 @@ const Navbar = () => {
 
   const categories = [
     { name: "All", path: "/menu" },
-    { name: "Salad", path: "/menu/salad" },
-    { name: "Pizza", path: "/menu/pizza" },
-    { name: "Soup", path: "/menu/soup" },
-    { name: "Dessert", path: "/menu/dessert" },
-    { name: "Drinks", path: "/menu/drinks" }
+    { name: "Salad", path: "/menu/category/salad" },
+    { name: "Pizza", path: "/menu/category/pizza" },
+    { name: "Soup", path: "/menu/category/soup" },
+    { name: "Dessert", path: "/menu/category/dessert" },
+    { name: "Drinks", path: "/menu/category/drinks" }
   ];
 
   const navItems = (
@@ -68,10 +69,10 @@ const Navbar = () => {
           <summary>Services</summary>
           <ul className="p-2">
             <li>
-              <a>Online Order</a>
+              <a>Sales</a>
             </li>
             <li>
-              <a>Table Booking</a>
+              <a>About Us</a>
             </li>
             <li>
               <a>Order Tracking</a>
@@ -127,23 +128,8 @@ const Navbar = () => {
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">{navItems}</ul>
         </div>
-        <div className="navbar-end ">
-          <button className="btn btn-ghost btn-circle hidden lg:flex">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </button>
+        <div className="navbar-end">
+          <SearchBar />
          
          {/* shopping cart */}
          <Link to="/cart-page">
@@ -172,7 +158,6 @@ const Navbar = () => {
          </Link>
 
           {/* login button */}
-
           { 
             user ? <>
            <Profile user={user}/>

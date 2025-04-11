@@ -7,9 +7,10 @@ import useCart from "../hooks/useCart";
 import axios from 'axios';
 
 const Cards = ({ item }) => {
-  const { name, image, price, recipe, id } = item;
-  console.log("Item received:", item);
-  console.log("id value:", id);
+  console.log("Item received in Cards:", item); // Debug log
+  const { name, image, price, recipe, _id, id } = item;
+  const itemId = _id || id; // Fallback to id if _id is not available
+  console.log("Item ID:", itemId); // Debug log
   
   const { user } = useContext(AuthContext);
   const [cart, refetch] = useCart();
@@ -24,7 +25,7 @@ const Cards = ({ item }) => {
   const handleAddToCart = () => {
     if (user && user.email) {
       const cartItem = {
-        menuItemId: id,
+        menuItemId: itemId,
         name: name,
         quantity: 1,
         image: image,
@@ -32,10 +33,8 @@ const Cards = ({ item }) => {
         email: user.email,
         recipe: recipe || "",
       };
-      console.log("Cart item being sent:", cartItem);
-  
+      
       const token = localStorage.getItem('access-token');
-      console.log("Token from localStorage:", token ? "Token exists" : "Token missing", token ? token.substring(0, 20) + "..." : "");
       
       if (!token) {
         Swal.fire({
@@ -48,7 +47,7 @@ const Cards = ({ item }) => {
         navigate('/login', { state: { from: location } });
         return;
       }
-  
+
       axios.post('http://localhost:8080/api/v1/carts', cartItem, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -68,8 +67,6 @@ const Cards = ({ item }) => {
         })
         .catch((error) => {
           console.error("Error adding to cart:", error);
-          console.error("Error response:", error.response);
-          console.error("Error details:", error.response?.data);
           const errorMessage = error.response?.data?.message || 'Failed to add item to cart';
           Swal.fire({
             position: 'center',
@@ -95,6 +92,15 @@ const Cards = ({ item }) => {
     }
   };
 
+  const handleProductClick = () => {
+    if (!itemId) {
+      console.error("No item ID available");
+      return;
+    }
+    console.log("Navigating to product with ID:", itemId); // Debug log
+    navigate(`/menu/item/${itemId}`);
+  };
+
   return (
     <div className="card shadow-xl relative mr-5 md:my-5">
       <div
@@ -105,16 +111,15 @@ const Cards = ({ item }) => {
       >
         <FaHeart className="w-5 h-5 cursor-pointer" />
       </div>
-      <Link to={`/menu/${id}`}>
+      <div onClick={handleProductClick} style={{cursor: 'pointer'}}>
         <figure>
           <img src={image} alt={name} className="hover:scale-105 transition-all duration-300 md:h-72" />
         </figure>
-      </Link>
+      </div>
       <div className="card-body">
-        <Link to={`/menu/${id}`}>
-          <h2 className="card-title">{name}!</h2>
-        </Link>
-        <p>{recipe || "Description of the item"}</p>
+        <div onClick={handleProductClick} style={{cursor: 'pointer'}}>
+          <h2 className="card-title">{name}</h2>
+        </div>
         <div className="card-actions justify-between items-center mt-2">
           <h5 className="font-semibold">
             <span className="text-sm text-red">$ </span> {price}
