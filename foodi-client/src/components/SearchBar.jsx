@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const SearchBar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -39,9 +40,33 @@ const SearchBar = () => {
     };
 
     const handleSuggestionClick = (item) => {
-        navigate(`/menu?category=${item.category}&search=${encodeURIComponent(item.name)}`);
-        setIsOpen(false);
-        setSearchQuery('');
+        try {
+            if (!item) {
+                console.error('Invalid product data:', item);
+                return;
+            }
+            
+            // Get the product ID from either id or _id field
+            const productId = item._id || item.id;
+            
+            if (!productId) {
+                console.error('Product ID not found:', item);
+                return;
+            }
+
+            navigate(`/menu/item/${productId}`);
+            setIsOpen(false);
+            setSearchQuery('');
+        } catch (error) {
+            console.error('Error navigating to product detail:', error);
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'Không thể chuyển đến trang chi tiết sản phẩm',
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        }
     };
 
     return (
@@ -92,7 +117,7 @@ const SearchBar = () => {
                         <div className="mt-4 max-h-96 overflow-y-auto">
                             {suggestions.map((item) => (
                                 <div
-                                    key={item.id}
+                                    key={item._id || item.id}
                                     onClick={() => handleSuggestionClick(item)}
                                     className="flex items-center gap-4 p-2 hover:bg-gray-100 cursor-pointer rounded-lg"
                                 >

@@ -87,7 +87,7 @@ const ProductDetail = () => {
 
       // Convert price and quantity to appropriate types
       const cartItem = {
-        menuItemId: productId.toString(), // Use the determined ID
+        menuItemId: productId.toString(),
         name: product.name,
         quantity: parseInt(quantity),
         image: product.image,
@@ -96,15 +96,16 @@ const ProductDetail = () => {
         recipe: product.recipe || ""
       };
       
-      console.log("Sending cart item:", cartItem); // Debug log
+      console.log("Sending cart item:", cartItem);
       
+      // Check if token exists and is valid
       const token = localStorage.getItem('access-token');
-      
       if (!token) {
+        localStorage.removeItem('access-token');
         Swal.fire({
           position: 'center',
           icon: 'warning',
-          title: 'Please login to add items to cart',
+          title: 'Session expired. Please login again.',
           showConfirmButton: false,
           timer: 1500,
         });
@@ -119,29 +120,47 @@ const ProductDetail = () => {
       );
       
       if (existingCartItem) {
-        // Update quantity if item exists
-        const updatedQuantity = existingCartItem.quantity + parseInt(quantity);
-        axiosSecure.patch(`/api/v1/carts/${existingCartItem._id}`, {
-          quantity: updatedQuantity,
-          menuItemId: productId.toString() // Use the determined ID
-        })
+        // Show message that item is already in cart
+        Swal.fire({
+          position: 'center',
+          icon: 'info',
+          title: 'Sản phẩm đã có trong giỏ hàng',
+          text: `Số lượng hiện tại: ${existingCartItem.quantity}`,
+          showConfirmButton: true,
+          confirmButtonText: 'OK',
+          timer: 2000,
+        });
+        return;
+      }
+
+      // Add new item
+      axiosSecure.post('/api/v1/carts', cartItem, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
         .then((response) => {
-          console.log("Update response:", response.data); // Debug log
+          console.log("Server response:", response.data);
           if (response.data) {
             refetch();
             Swal.fire({
               position: 'center',
               icon: 'success',
-              title: 'Cart updated successfully!',
+              title: 'Food added to the cart.',
               showConfirmButton: false,
               timer: 1500,
             });
           }
         })
         .catch((error) => {
-          console.error("Error updating cart:", error);
-          console.log("Error response data:", error.response?.data); // Debug log
-          const errorMessage = error.response?.data?.message || 'Failed to update cart';
+          console.error("Error adding to cart:", error);
+          if (error.response?.status === 403) {
+            localStorage.removeItem('access-token');
+            navigate('/login', { state: { from: location } });
+            return;
+          }
+          const errorMessage = error.response?.data?.message || 'Failed to add item to cart';
           Swal.fire({
             position: 'center',
             icon: 'warning',
@@ -150,35 +169,6 @@ const ProductDetail = () => {
             timer: 1500,
           });
         });
-      } else {
-        // Add new item
-        axiosSecure.post('/api/v1/carts', cartItem)
-          .then((response) => {
-            console.log("Server response:", response.data); // Debug log
-            if (response.data) {
-              refetch();
-              Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: 'Food added to the cart.',
-                showConfirmButton: false,
-                timer: 1500,
-              });
-            }
-          })
-          .catch((error) => {
-            console.error("Error adding to cart:", error);
-            console.log("Error details:", error.response?.data); // Debug log
-            const errorMessage = error.response?.data?.message || 'Failed to add item to cart';
-            Swal.fire({
-              position: 'center',
-              icon: 'warning',
-              title: errorMessage,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          });
-      }
     } else {
       Swal.fire({
         title: 'Please login to order the food',
@@ -219,25 +209,27 @@ const ProductDetail = () => {
     );
   }
 
-  const oldPrice = product.price * 1.2; // Giá cũ cao hơn 20%
-
   return (
     <div className="max-w-screen-xl mx-auto p-4 md:p-8 my-8">
       <div className="flex flex-col md:flex-row gap-12">
         {/* Product Image Section */}
         <div className="md:w-1/2">
           <div className="sticky top-20">
-            <img 
-              src={product.image} 
-              alt={product.name} 
-              className="w-full h-[400px] rounded-2xl object-cover shadow-lg"
-            />
-            <div className="flex gap-4 mt-6 justify-center">
+            <div className="w-full h-[500px] rounded-2xl overflow-hidden shadow-lg">
               <img 
                 src={product.image} 
                 alt={product.name} 
-                className="w-20 h-20 rounded-lg object-cover cursor-pointer border-2 border-green hover:border-red-500 transition-all"
+                className="w-full h-full object-contain"
               />
+            </div>
+            <div className="flex gap-4 mt-6 justify-center">
+              <div className="w-24 h-24 rounded-lg overflow-hidden cursor-pointer border-2 border-green hover:border-red-500 transition-all">
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -248,10 +240,7 @@ const ProductDetail = () => {
             <h1 className="text-4xl font-bold mb-4">{product.name}</h1>
             <div className="flex items-center gap-4 mb-4">
               <span className="text-3xl font-bold text-red-500">
-                {product.price.toLocaleString()}đ
-              </span>
-              <span className="text-xl text-gray-400 line-through">
-                {oldPrice.toLocaleString()}đ
+                {product.price.toLocaleString()}$
               </span>
             </div>
           </div>
@@ -270,12 +259,9 @@ const ProductDetail = () => {
 
           {/* Product Details */}
           <div className="space-y-4 border-b pb-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <p className="text-gray-600">
                 Xuất xứ: <span className="font-medium">Việt Nam</span>
-              </p>
-              <p className="text-gray-600">
-                Khối lượng: <span className="font-medium">1.0Kg/ hộp</span>
               </p>
             </div>
             <p className="text-gray-700 leading-relaxed">{product.recipe}</p>
