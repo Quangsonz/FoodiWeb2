@@ -8,9 +8,13 @@ import axios from 'axios';
 
 const Cards = ({ item }) => {
   console.log("Item received in Cards:", item); // Debug log
-  const { name, image, price, recipe, _id, id } = item;
+  const { name, image, price, recipe, _id, id, sales, category } = item;
   const itemId = _id || id; // Fallback to id if _id is not available
   console.log("Item ID:", itemId); // Debug log
+  
+  // Tính toán giá gốc và phần trăm giảm giá
+  const originalPrice = category === "sale" ? (price * 1.1).toFixed(2) : price;
+  const discountPercentage = category === "sale" ? Math.round((1 - price / originalPrice) * 100) : 0;
   
   const { user } = useContext(AuthContext);
   const [cart, refetch] = useCart();
@@ -29,7 +33,7 @@ const Cards = ({ item }) => {
         name: name,
         quantity: 1,
         image: image,
-        price: price,
+        price: sales || price, // Use sales price if available, otherwise use regular price
         email: user.email,
         recipe: recipe || "",
       };
@@ -51,7 +55,9 @@ const Cards = ({ item }) => {
       axios.post('http://localhost:8080/api/v1/carts', cartItem, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
+        withCredentials: true
       })
         .then((response) => {
           if (response.data) {
@@ -119,10 +125,22 @@ const Cards = ({ item }) => {
       <div className="card-body">
         <div onClick={handleProductClick} style={{cursor: 'pointer'}}>
           <h2 className="card-title">{name}</h2>
+          {category === "sale" && (
+            <div className="badge badge-error">-{discountPercentage}%</div>
+          )}
         </div>
         <div className="card-actions justify-between items-center mt-2">
           <h5 className="font-semibold">
-            <span className="text-sm text-red">$ </span> {price}
+            {category === "sale" ? (
+              <>
+                <span className="text-sm text-red">$ </span> {price}
+                <span className="text-sm text-gray-400 line-through ml-2">${originalPrice}</span>
+              </>
+            ) : (
+              <>
+                <span className="text-sm text-red">$ </span> {price}
+              </>
+            )}
           </h5>
           <button onClick={handleAddToCart} className="btn bg-green text-white">
             Add to Cart

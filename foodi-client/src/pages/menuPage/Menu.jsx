@@ -153,6 +153,12 @@
                                                                                         >
                                                                                           Drinks
                                                                                         </button>
+                                                                                        <button
+                                                                                          onClick={() => filterItems("sale")}
+                                                                                          className={selectedCategory === "sale" ? "active" : ""}
+                                                                                        >
+                                                                                          Sale
+                                                                                        </button>
                                                                                       </div>
 
                                                                                       <div className="flex justify-end mb-4 rounded-sm">

@@ -29,7 +29,7 @@ const sharedLinks = (
         <Link to="/menu"><FaCartShopping/> Menu</Link>
     </li>
     <li>
-        <Link to="/menu"><FaLocationArrow/> Orders Tracking</Link>
+        <Link to="/order-tracking"><FaLocationArrow/> Orders Tracking</Link>
     </li>
     <li>
         <Link to="/menu"><FaQuestionCircle/> Customer Support</Link>
@@ -91,7 +91,7 @@ const DashboardLayout = () => {
             </Link>
           </li>
           <li>
-            <Link to="/dashboard">
+            <Link to="/dashboard/manage-bookings">
               <FaShoppingBag /> Manage Bookings
             </Link>
           </li>

@@ -71,6 +71,7 @@ const Checkout = () => {
 
       const orderData = {
         userId: user?.email,
+        email: user?.email, // Thêm email để hiển thị trong ManageBookings
         customerName: shippingInfo.fullName,
         items: cart.map(item => ({
           menuId: item._id,
@@ -79,10 +80,13 @@ const Checkout = () => {
           price: item.price
         })),
         total: orderTotal,
-        status: "pending",
+        totalAmount: orderTotal, // Đồng bộ tên field với ManageBookings
+        status: "pending", // Mặc định là pending, cần admin xác nhận
         createdAt: new Date(),
         address: `${shippingInfo.address}, ${shippingInfo.district}, ${shippingInfo.province}`,
-        phone: shippingInfo.phone
+        phone: shippingInfo.phone,
+        note: shippingInfo.note,
+        requiresConfirmation: true // Thêm flag để đánh dấu đơn hàng cần được xác nhận
       };
 
       const response = await axios.post(
@@ -98,13 +102,26 @@ const Checkout = () => {
       if (response.data) {
         // Clear cart after successful order
         localStorage.removeItem("cart");
-        refetchCart();
+        
+        // Xóa tất cả items trong giỏ hàng
+        try {
+          await Promise.all(cart.map(item => 
+            axios.delete(`http://localhost:8080/api/v1/carts/${item.id}`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+              },
+            })
+          ));
+          refetchCart();
+        } catch (error) {
+          console.error('Error clearing cart:', error);
+        }
         
         Swal.fire({
           position: "center",
           icon: "success",
           title: "Đặt hàng thành công!",
-          text: "Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ liên hệ sớm nhất!",
+          text: "Đơn hàng của bạn đang chờ xác nhận. Chúng tôi sẽ liên hệ sớm nhất!",
           showConfirmButton: true,
         }).then(() => {
           // Chuyển đến trang xác nhận đơn hàng
@@ -121,6 +138,7 @@ const Checkout = () => {
                 note: shippingInfo.note,
                 totalAmount: cartSubtotal,
                 shippingFee: shippingFee,
+                status: "pending", // Thêm trạng thái vào chi tiết đơn hàng
                 items: cart.map(item => ({
                   name: item.name,
                   price: parseFloat(item.price),
@@ -172,11 +190,10 @@ const Checkout = () => {
               <input
                 type="email"
                 name="email"
-                value={shippingInfo.email}
-                onChange={handleInputChange}
-                placeholder="Email"
-                className="w-full p-3 border rounded-md"
-                required
+                value={user?.email || ""}
+                className="w-full p-3 border rounded-md bg-gray-100 cursor-not-allowed"
+                readOnly
+                disabled
               />
 
               <input
@@ -362,6 +379,9 @@ const Checkout = () => {
               >
                 {loading ? "ĐANG XỬ LÝ..." : "ĐẶT HÀNG"}
               </button>
+              <p className="text-sm text-gray-500 text-center">
+                Đơn hàng của bạn sẽ được admin xác nhận trước khi giao hàng
+              </p>
             </div>
           </div>
         </div>
@@ -370,4 +390,4 @@ const Checkout = () => {
   );
 };
 
-export default Checkout; 
+export default Checkout;

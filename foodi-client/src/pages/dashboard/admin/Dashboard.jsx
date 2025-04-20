@@ -1,7 +1,7 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
-import { FaBook, FaUsers, FaDollarSign, FaListAlt } from 'react-icons/fa';
+import { FaBook, FaUsers, FaDollarSign, FaListAlt, FaChartLine, FaChartBar } from 'react-icons/fa';
 
 const Dashboard = () => {
   const axiosSecure = useAxiosSecure();
@@ -9,15 +9,7 @@ const Dashboard = () => {
   const { data: stats = {} } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const res = await axiosSecure.get('/api/v1/admin/stats');
-      return res.data;
-    }
-  });
-
-  const { data: recentOrders = [] } = useQuery({
-    queryKey: ['recent-orders'],
-    queryFn: async () => {
-      const res = await axiosSecure.get('/api/v1/orders/recent');
+      const res = await axiosSecure.get('/admin/stats');
       return res.data;
     }
   });
@@ -71,48 +63,119 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Recent Orders */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-semibold mb-6">Recent Orders</h3>
-        <div className="overflow-x-auto">
-          <table className="table w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Menu Items</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {recentOrders.length > 0 ? (
-                recentOrders.map((order, index) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{order.customerName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{order.items?.length || 0} items</td>
-                    <td className="px-6 py-4 whitespace-nowrap">${(order.total || 0).toFixed(2)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                        order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {order.status || 'pending'}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
-                    No orders found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {/* Revenue Analysis */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Monthly Revenue */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold">Monthly Revenue</h3>
+            <FaChartLine className="text-gray-400 text-xl" />
+          </div>
+          <div className="space-y-4">
+            {/* Monthly Stats */}
+            {['January', 'February', 'March', 'April'].map((month, index) => (
+              <div key={month} className="flex items-center justify-between">
+                <span className="text-gray-600">{month}</span>
+                <div className="flex-1 mx-4">
+                  <div className="h-2 bg-gray-200 rounded-full">
+                    <div 
+                      className="h-2 bg-purple-500 rounded-full" 
+                      style={{ width: `${(index + 1) * 20}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <span className="text-gray-900 font-medium">${(index + 1) * 1000}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Category Performance */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold">Category Performance</h3>
+            <FaChartBar className="text-gray-400 text-xl" />
+          </div>
+          <div className="space-y-6">
+            {/* Category Stats */}
+            {[
+              { name: 'Main Course', value: 45, color: 'bg-blue-500' },
+              { name: 'Appetizers', value: 30, color: 'bg-green-500' },
+              { name: 'Desserts', value: 15, color: 'bg-yellow-500' },
+              { name: 'Beverages', value: 10, color: 'bg-red-500' }
+            ].map((category) => (
+              <div key={category.name} className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">{category.name}</span>
+                  <span className="text-gray-900 font-medium">{category.value}%</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full">
+                  <div 
+                    className={`h-2 ${category.color} rounded-full`}
+                    style={{ width: `${category.value}%` }}
+                  ></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Additional Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Popular Items */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">Popular Items</h3>
+          <div className="space-y-4">
+            {[
+              { name: 'Roast Duck', orders: 150 },
+              { name: 'Beef Steak', orders: 120 },
+              { name: 'Pasta', orders: 90 }
+            ].map((item) => (
+              <div key={item.name} className="flex justify-between items-center">
+                <span className="text-gray-600">{item.name}</span>
+                <span className="text-sm font-medium bg-green-100 text-green-800 py-1 px-3 rounded-full">
+                  {item.orders} orders
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Customer Satisfaction */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">Customer Satisfaction</h3>
+          <div className="flex items-center justify-center h-32">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-500 mb-2">95%</div>
+              <div className="text-gray-500">Positive Reviews</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Peak Hours */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">Peak Hours</h3>
+          <div className="space-y-3">
+            {[
+              { time: '12:00 - 14:00', percentage: 85 },
+              { time: '18:00 - 20:00', percentage: 95 },
+              { time: '20:00 - 22:00', percentage: 75 }
+            ].map((peak) => (
+              <div key={peak.time} className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">{peak.time}</span>
+                  <span className="text-gray-900">{peak.percentage}%</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full">
+                  <div 
+                    className="h-2 bg-blue-500 rounded-full"
+                    style={{ width: `${peak.percentage}%` }}
+                  ></div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

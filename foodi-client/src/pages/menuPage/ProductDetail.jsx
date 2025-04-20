@@ -134,12 +134,7 @@ const ProductDetail = () => {
       }
 
       // Add new item
-      axiosSecure.post('/api/v1/carts', cartItem, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
+      axiosSecure.post('/carts', cartItem)
         .then((response) => {
           console.log("Server response:", response.data);
           if (response.data) {

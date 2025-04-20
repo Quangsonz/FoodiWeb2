@@ -1,66 +1,120 @@
-import React from 'react'
-import { useLoaderData, useNavigate } from 'react-router-dom'
-import Swal from 'sweetalert2'
-import useAxiosPublic from '../../../hooks/useAxiosPublic';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import useAxiosPublic from '../../../hooks/useAxiosPublic';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import Swal from 'sweetalert2';
 import { FaUtensils } from 'react-icons/fa';
 
 const UpdateMenu = () => {
-    const item = useLoaderData();
-    console.log(item);
-    const { register, handleSubmit, reset } = useForm();
-    const axiosPublic = useAxiosPublic();
-    const axiosSecure = useAxiosSecure();
+  const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [item, setItem] = useState(location.state || null);
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
+  const [loading, setLoading] = useState(false);
 
-    const navigate = useNavigate()
-  
-    // image hosting key
-    const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
-    // console.log(image_hosting_key)
-    const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
-    const onSubmit = async (data) => {
-      // console.log(data)
-      const imageFile = { image: data.image[0] };
-      const hostingImg = await axiosPublic.post(image_hosting_api, imageFile, {
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-      });
-      // console.log(hostingImg.data)
-      if (hostingImg.data.success) {
-        const menuItem = {
-          name: data.name,
-          category: data.category,
-          price: parseFloat(data.price), 
-          recipe: data.recipe,
-          image: hostingImg.data.data.display_url
-        };
-  
-        // console.log(menuItem);
-        const postMenuItem = axiosSecure.patch(`/api/v1/menu/${item._id}`, menuItem);
-        if(postMenuItem){
-          reset()
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Your item updated successfully!",
-            showConfirmButton: false,
-            timer: 1500
-          });
-          navigate("/dashboard/manage-items")
+  useEffect(() => {
+    const fetchMenuItem = async () => {
+      try {
+        if (!item && id) {
+          console.log('Fetching menu item with id:', id);
+          const response = await axiosSecure.get(`/menu/${id}`);
+          console.log('Fetched menu item:', response.data);
+          setItem(response.data);
         }
+      } catch (error) {
+        console.error('Error fetching menu item:', error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to load menu item"
+        });
       }
     };
+
+    fetchMenuItem();
+  }, [id, axiosSecure, item]);
+
+  // image hosting key
+  const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
+  const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      let imageUrl = item.image;
+
+      // Upload new image if provided
+      if (data.image && data.image[0]) {
+        const formData = new FormData();
+        formData.append('image', data.image[0]);
+        const res = await axiosPublic.post(image_hosting_api, formData, {
+          headers: {
+            "content-type": "multipart/form-data",
+          },
+        });
+        if (res.data.success) {
+          imageUrl = res.data.data.display_url;
+        }
+      }
+
+      // Update menu item
+      const updatedItem = {
+        name: data.name,
+        category: data.category,
+        price: parseFloat(data.price),
+        recipe: data.recipe,
+        image: imageUrl
+      };
+
+      console.log('Updating menu item:', id, updatedItem);
+      const menuRes = await axiosSecure.patch(`/menu/${id}`, updatedItem);
+      console.log('Update response:', menuRes);
+
+      if (menuRes.data) {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Menu Item Updated!",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        navigate('/dashboard/manage-items');
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: error.message || "Please try again"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!item) {
+    return (
+      <div className="w-full md:w-[870px] px-4 mx-auto">
+        <h2 className="text-2xl font-semibold my-4 text-red-500">
+          Loading menu item...
+        </h2>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full md:w-[870px] px-4 mx-auto">
       <h2 className="text-2xl font-semibold my-4">
-        Update This <span className="text-green">Menu Item</span>
+        Update Menu Item: <span className="text-green">{item.name}</span>
       </h2>
 
-      {/* form here */}
-      <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="bg-[#F3F3F3] p-6 rounded-lg">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Recipe Name */}
           <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Recipe Name*</span>
@@ -69,36 +123,35 @@ const UpdateMenu = () => {
               type="text"
               defaultValue={item.name}
               {...register("name", { required: true })}
-              placeholder="Recipe Name"
-              className="input input-bordered w-full "
+              className="input input-bordered w-full"
             />
+            {errors.name && <span className="text-red-500">Recipe name is required</span>}
           </div>
 
-          {/* 2nd row */}
-          <div className="flex items-center gap-4">
-            {/* categories */}
-            <div className="form-control w-full my-6">
+          {/* Category and Price Row */}
+          <div className="flex gap-6">
+            {/* Category */}
+            <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Category*</span>
               </label>
               <select
-                {...register("category", { required: true })}
-                className="select select-bordered"
                 defaultValue={item.category}
+                {...register("category", { required: true })}
+                className="select select-bordered w-full"
               >
-                <option disabled value="default">
-                  Select a category
-                </option>
                 <option value="salad">Salad</option>
                 <option value="pizza">Pizza</option>
                 <option value="soup">Soup</option>
-                <option value="dessert">dessert</option>
+                <option value="dessert">Dessert</option>
                 <option value="drinks">Drinks</option>
                 <option value="popular">Popular</option>
+                <option value="sale">Sale</option>
               </select>
+              {errors.category && <span className="text-red-500">Category is required</span>}
             </div>
 
-            {/* prices */}
+            {/* Price */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Price*</span>
@@ -107,41 +160,65 @@ const UpdateMenu = () => {
                 type="number"
                 defaultValue={item.price}
                 {...register("price", { required: true })}
-                placeholder="Price"
                 className="input input-bordered w-full"
+                step="any"
               />
+              {errors.price && <span className="text-red-500">Price is required</span>}
             </div>
           </div>
 
-          {/* 3rd row */}
+          {/* Recipe Details */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Recipe Details</span>
+              <span className="label-text">Recipe Details*</span>
             </label>
             <textarea
-             defaultValue={item.recipe}
+              defaultValue={item.recipe}
               {...register("recipe", { required: true })}
               className="textarea textarea-bordered h-24"
-              placeholder="Tell the worlds about your recipe"
             ></textarea>
+            {errors.recipe && <span className="text-red-500">Recipe details are required</span>}
           </div>
 
-          {/* 4th row */}
-          <div className="form-control w-full my-6">
+          {/* Image Upload */}
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Current Image</span>
+            </label>
+            <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded-lg mb-2" />
+            
+            <label className="label">
+              <span className="label-text">Update Image</span>
+            </label>
             <input
-              {...register("image", { required: true })}
               type="file"
+              {...register("image")}
               className="file-input w-full max-w-xs"
+              accept="image/*"
             />
           </div>
 
-          <button className="btn bg-green text-white px-6">
-            Update Item <FaUtensils />
-          </button>
+          {/* Submit Button */}
+          <div className="text-center">
+            <button
+              type="submit"
+              className="btn bg-green text-white px-6"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="loading loading-spinner"></span>
+              ) : (
+                <>
+                  <FaUtensils className="mr-2" />
+                  Update Menu Item
+                </>
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UpdateMenu
+export default UpdateMenu;

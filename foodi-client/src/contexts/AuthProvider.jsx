@@ -25,20 +25,46 @@ const AuthProvider = ({children}) => {
         return signInWithPopup(auth, googleProvider);
     }
 
-    const login = (email, password) =>{
-        return signInWithEmailAndPassword(auth, email, password);
+    const login = async (email, password) => {
+        setLoading(true);
+        try {
+            const result = await signInWithEmailAndPassword(auth, email, password);
+            const user = result.user;
+            await getToken(user.email);
+            return result;
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const logOut = () =>{
-        localStorage.removeItem('access-token');
-        return signOut(auth);
+    const logOut = async () => {
+        setLoading(true);
+        try {
+            localStorage.removeItem('access-token');
+            await signOut(auth);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const getToken = async (email) => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/jwt', { email });
+            if (response.data.token) {
+                localStorage.setItem('access-token', response.data.token);
+                return response.data.token;
+            }
+        } catch (error) {
+            console.error('Error getting token:', error);
+            localStorage.removeItem('access-token');
+        }
     }
 
     // update your profile
     const updateUserProfile = (name, photoURL) => {
-      return  updateProfile(auth.currentUser, {
+        return updateProfile(auth.currentUser, {
             displayName: name, photoURL: photoURL
-          })
+        });
     }
 
     // update password
@@ -53,30 +79,20 @@ const AuthProvider = ({children}) => {
         return updatePassword(user, newPassword);
     }
 
-    useEffect( () =>{
-        const unsubscribe = onAuthStateChanged(auth, currentUser =>{
-            // console.log(currentUser);
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
-            if(currentUser){
-                const userInfo ={email: currentUser.email}
-                axios.post('http://localhost:8080/api/v1/jwt', userInfo)
-                  .then( (response) => {
-                    // console.log(response.data.token);
-                    if(response.data.token){
-                        localStorage.setItem("access-token", response.data.token)
-                    }
-                  })
-            } else{
-               localStorage.removeItem("access-token")
+            if (currentUser) {
+                // Get new token when user state changes
+                await getToken(currentUser.email);
+            } else {
+                localStorage.removeItem('access-token');
             }
-           
             setLoading(false);
         });
 
-        return () =>{
-            return unsubscribe();
-        }
-    }, [])
+        return () => unsubscribe();
+    }, []);
 
     const authInfo = {
         user, 
@@ -86,7 +102,8 @@ const AuthProvider = ({children}) => {
         logOut,
         signUpWithGmail,
         updateUserProfile,
-        updatePassword: updateUserPassword
+        updatePassword: updateUserPassword,
+        getToken
     }
 
     return (

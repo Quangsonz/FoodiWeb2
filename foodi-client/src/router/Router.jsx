@@ -20,6 +20,9 @@ import ContactMessages from "../pages/dashboard/admin/ContactMessages";
 import Checkout from "../pages/menuPage/Checkout";
 import OrderSuccess from "../pages/menuPage/OrderSuccess";
 import ProductDetail from "../pages/menuPage/ProductDetail";
+import AboutUs from "../pages/servicePage/AboutUs";
+import OrderTracking from "../pages/servicePage/OrderTracking";
+import ManageBookings from "../pages/dashboard/admin/ManageBookings";
 
 const router = createBrowserRouter([
     {
@@ -45,6 +48,14 @@ const router = createBrowserRouter([
         {
           path: "/contact",
           element: <Contact/>
+        },
+        {
+          path: "/about-us",
+          element: <AboutUs/>
+        },
+        {
+          path: "/order-tracking",
+          element: <OrderTracking/>
         },
         {
           path: "/order",
@@ -101,6 +112,10 @@ const router = createBrowserRouter([
           element: <ManageItems/>
         },
         {
+          path: "manage-bookings",
+          element: <ManageBookings/>
+        },
+        {
           path: "update-menu/:id",
           element: <UpdateMenu/>
         },
@@ -112,4 +127,4 @@ const router = createBrowserRouter([
     }
   ]);
 
-  export default router;
+export default router;

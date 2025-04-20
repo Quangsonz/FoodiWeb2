@@ -9,11 +9,18 @@ const ManageItems = () => {
   const axiosSecure = useAxiosSecure();
   
   // Fetch menu items
-  const { data: menuItems = [], refetch } = useQuery({
+  const { data: menuItems = [], refetch, isLoading, error } = useQuery({
     queryKey: ['menu'],
     queryFn: async () => {
-      const res = await axiosSecure.get('/api/v1/menu');
-      return res.data;
+      try {
+        console.log('Fetching menu items...');
+        const res = await axiosSecure.get('/menu');
+        console.log('Menu items response:', res.data);
+        return res.data;
+      } catch (error) {
+        console.error('Error fetching menu items:', error);
+        throw error;
+      }
     }
   });
 
@@ -30,7 +37,7 @@ const ManageItems = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosSecure.delete(`/api/v1/menu/${item.id}`);
+          const res = await axiosSecure.delete(`/menu/${item._id}`);
           if (res.data) {
             refetch();
             Swal.fire({
@@ -40,6 +47,7 @@ const ManageItems = () => {
             });
           }
         } catch (error) {
+          console.error('Delete error:', error);
           Swal.fire({
             title: "Error!",
             text: "Failed to delete menu item.",
@@ -49,6 +57,26 @@ const ManageItems = () => {
       }
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-full md:w-[870px] px-4 mx-auto">
+        <h2 className="text-2xl font-semibold my-4">
+          Loading menu items...
+        </h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full md:w-[870px] px-4 mx-auto">
+        <h2 className="text-2xl font-semibold my-4 text-red-500">
+          Error loading menu items: {error.message}
+        </h2>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full md:w-[870px] px-4 mx-auto">
@@ -64,27 +92,39 @@ const ManageItems = () => {
               <th>#</th>
               <th>Image</th>
               <th>Item Name</th>
+              <th>Category</th>
               <th>Price</th>
               <th>Edit</th>
               <th>Delete</th>
             </tr>
           </thead>
           <tbody>
-            {menuItems.map((item, index) => (
-              <tr key={item.id}>
-                <td>{index + 1}</td>
+            {menuItems.map((item) => (
+              <tr key={item._id || item.id}>
+                <td>{menuItems.indexOf(item) + 1}</td>
                 <td>
                   <div className="avatar">
                     <div className="mask mask-squircle w-12 h-12">
-                      <img src={item.image} alt={item.name} />
+                      <img 
+                        src={item.image} 
+                        alt={item.name || 'Menu item'}
+                      />
                     </div>
                   </div>
                 </td>
                 <td>{item.name}</td>
+                <td>
+                  <span className="capitalize px-2 py-1 bg-gray-100 text-gray-800 rounded-md text-sm">
+                    {item.category}
+                  </span>
+                </td>
                 <td>${item.price}</td>
                 <td>
-                  <Link to={`/dashboard/update-menu/${item.id}`}>
-                    <button className="btn btn-ghost btn-sm text-yellow-500">
+                  <Link 
+                    to={`/dashboard/update-menu/${item._id || item.id}`}
+                    state={item}
+                  >
+                    <button className="btn btn-ghost btn-sm text-blue-500">
                       <FaEdit />
                     </button>
                   </Link>

@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import useCart from "../hooks/useCart";
 import useAuth from "../hooks/useAuth";
 import SearchBar from "./SearchBar";
+import ServicesDropdown from "./ServicesDropdown";
 
 const Navbar = () => {
   const [isSticky, setSticky] = useState(false);
@@ -36,15 +37,14 @@ const Navbar = () => {
     { name: "Pizza", path: "/menu/category/pizza" },
     { name: "Soup", path: "/menu/category/soup" },
     { name: "Dessert", path: "/menu/category/dessert" },
-    { name: "Drinks", path: "/menu/category/drinks" }
+    { name: "Drinks", path: "/menu/category/drinks" },
+    { name: "Sale", path: "/menu/category/sale" }
   ];
 
   const navItems = (
     <>
       <li>
-        <a href="/">
-          Home
-        </a>
+        <Link to="/">Home</Link>
       </li>
       <li tabIndex={0}>
         <details>
@@ -64,21 +64,8 @@ const Navbar = () => {
           </ul>
         </details>
       </li>
-      <li tabIndex={0}>
-        <details>
-          <summary>Services</summary>
-          <ul className="p-2">
-            <li>
-              <a>Sales</a>
-            </li>
-            <li>
-              <a>About Us</a>
-            </li>
-            <li>
-              <a>Order Tracking</a>
-            </li>
-          </ul>
-        </details>
+      <li>
+        <ServicesDropdown />
       </li>
       <li>
         <Link to="/contact">Contact</Link>
@@ -87,13 +74,13 @@ const Navbar = () => {
   );
   return (
     <header
-      className={`max-w-screen-2xl container mx-auto fixed top-0 left-0 right-0 transition-all duration-300 ease-in-out`}
+      className={`max-w-screen-2xl container mx-auto fixed top-0 left-0 right-0 transition-all duration-300 ease-in-out bg-white`}
     >
       <div
         className={`navbar xl:px-24 ${
           isSticky
-            ? "shadow-md bg-base-100 transition-all duration-300 ease-in-out"
-            : ""
+            ? "shadow-md bg-white transition-all duration-300 ease-in-out"
+            : "bg-white"
         }`}
       >
         <div className="navbar-start">

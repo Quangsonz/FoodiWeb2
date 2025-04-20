@@ -10,7 +10,7 @@ const useAdmin = () => {
         queryKey: [user?.email, 'isAdmin'],
         enabled: !!user?.email,  // Only run query if user email exists
         queryFn: async () => {
-           const res = await axiosSecure.get(`/api/v1/users/admin/${user?.email}`)
+           const res = await axiosSecure.get(`/users/admin/${user?.email}`)
            console.log("API Response:", res)
            console.log("User email:", user?.email)
            console.log("Is Admin:", res.data)

@@ -9,7 +9,7 @@ const Users = () => {
   const { refetch, data: users = [] } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/api/v1/users");
+      const res = await axiosSecure.get("/users");
       return res.data;
     },
   });
@@ -17,23 +17,38 @@ const Users = () => {
   // Set user as admin
   const handleMakeAdmin = async (user) => {
     try {
-      const res = await axiosSecure.put(`/api/v1/users/admin/${user.id}`);
-      if (res.data) {
-        refetch();
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: `${user.name} is now an admin!`,
-          showConfirmButton: false,
-          timer: 1500
-        });
+      // Hiển thị hộp thoại xác nhận
+      const result = await Swal.fire({
+        title: 'Xác nhận cấp quyền Admin',
+        text: `Bạn có chắc chắn muốn cấp quyền Admin cho ${user.name}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Có, cấp quyền!',
+        cancelButtonText: 'Hủy'
+      });
+
+      // Nếu người dùng xác nhận
+      if (result.isConfirmed) {
+        const res = await axiosSecure.put(`/users/admin/${user.id}`);
+        if (res.data.modifiedCount > 0) {
+          refetch();
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: `${user.name} đã được cấp quyền Admin!`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       }
     } catch (error) {
       console.error("Error making admin:", error);
       Swal.fire({
         icon: "error",
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to make user admin",
+        title: "Lỗi!",
+        text: error.response?.data?.message || "Không thể cấp quyền Admin",
       });
     }
   };
@@ -45,30 +60,32 @@ const Users = () => {
       if (user.email === currentUserEmail) {
         Swal.fire({
           icon: "error",
-          title: "Error!",
-          text: "You cannot delete your own account!",
+          title: "Lỗi!",
+          text: "Bạn không thể xóa tài khoản của chính mình!",
         });
         return;
       }
 
       const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        title: "Bạn có chắc chắn?",
+        text: "Hành động này không thể hoàn tác!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: "Có, xóa!"
       });
 
       if (result.isConfirmed) {
-        const res = await axiosSecure.delete(`/api/v1/users/${user.id}`);
-        if (res.data) {
+        const res = await axiosSecure.delete(`/users/${user.id}`);
+        if (res.data.deletedCount > 0) {
           refetch();
           Swal.fire({
-            title: "Deleted!",
-            text: "User has been deleted.",
-            icon: "success"
+            position: "top-end",
+            icon: "success",
+            title: `${user.name} đã bị xóa!`,
+            showConfirmButton: false,
+            timer: 1500,
           });
         }
       }
@@ -76,8 +93,8 @@ const Users = () => {
       console.error("Error deleting user:", error);
       Swal.fire({
         icon: "error",
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to delete user",
+        title: "Lỗi!",
+        text: error.response?.data?.message || "Không thể xóa người dùng",
       });
     }
   };

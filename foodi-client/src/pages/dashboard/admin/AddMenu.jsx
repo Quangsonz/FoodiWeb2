@@ -16,8 +16,21 @@ const AddMenu = () => {
 
   const onSubmit = async (data) => {
     try {
+      // Show loading state
+      Swal.fire({
+        title: 'Uploading...',
+        text: 'Please wait while we upload your menu item',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       // Upload image
-      const imageFile = { image: data.image[0] };
+      const imageFile = new FormData();
+      imageFile.append('image', data.image[0]);
+      
       const hostingImg = await axiosPublic.post(image_hosting_api, imageFile, {
         headers: {
           "content-type": "multipart/form-data",
@@ -33,8 +46,11 @@ const AddMenu = () => {
           image: hostingImg.data.data.display_url
         };
 
-        // Add menu item
-        const response = await axiosSecure.post('/api/v1/menu', menuItem);
+        console.log('Sending menu item:', menuItem);
+        // Add menu item - note that /api/v1 is already in the base URL
+        const response = await axiosSecure.post('/menu', menuItem);
+        console.log('Response:', response);
+
         if(response.data) {
           reset();
           Swal.fire({
@@ -47,7 +63,7 @@ const AddMenu = () => {
         }
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error details:", error.response || error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -99,6 +115,7 @@ const AddMenu = () => {
                 <option value="dessert">Dessert</option>
                 <option value="drinks">Drinks</option>
                 <option value="popular">Popular</option>
+                <option value="sale">Sale</option>
               </select>
               {errors.category && <span className="text-red-500 text-sm mt-1">{errors.category.message}</span>}
             </div>
