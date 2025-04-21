@@ -114,7 +114,6 @@ const AddMenu = () => {
                 <option value="soup">Soup</option>
                 <option value="dessert">Dessert</option>
                 <option value="drinks">Drinks</option>
-                <option value="popular">Popular</option>
                 <option value="sale">Sale</option>
               </select>
               {errors.category && <span className="text-red-500 text-sm mt-1">{errors.category.message}</span>}

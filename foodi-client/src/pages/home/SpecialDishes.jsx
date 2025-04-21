@@ -6,6 +6,7 @@ import Slider from "react-slick";
 import { FaHeart} from "react-icons/fa"
 import Cards from "../../components/Cards";
 import { FaAngleRight, FaAngleLeft  } from "react-icons/fa6";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const SampleNextArrow = (props) => {
   const { className, style, onClick } = props;
@@ -36,16 +37,25 @@ const SamplePrevArrow = (props) => {
 const SpecialDishes = () => {
   const [recipes, setRecipes] = useState([]);
   const slider = React.useRef(null);
+  const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
-    fetch("/menu.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const specials = data.filter((item) => item.category === "popular");
-        // console.log(specials)
-        setRecipes(specials);
-      });
-  }, []);
+    // Fetch menu items from API
+    const fetchMenu = async () => {
+      try {
+        const response = await axiosPublic.get('/menu');
+        // Get random 8 items from the menu
+        const menuItems = response.data;
+        const randomItems = menuItems.sort(() => 0.5 - Math.random()).slice(0, 8);
+        setRecipes(randomItems);
+      } catch (error) {
+        console.error('Error fetching menu items:', error);
+      }
+    };
+
+    fetchMenu();
+  }, [axiosPublic]);
+
   const settings = {
     dots: true,
     infinite: false,
@@ -79,15 +89,15 @@ const SpecialDishes = () => {
         },
       },
     ],
-
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
   };
+
   return (
     <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 my-20 relative">
        <div className='text-left'>
-            <p className='subtitle'>Customer Favorites</p>
-            <h2 className='title'>Popular Catagories</h2>
+            <p className='subtitle'>Special Dishes</p>
+            <h2 className='title'>Standout Dishes From Our Menu</h2>
         </div>
       <div className="md:absolute right-3 top-8 mb-10 md:mr-24">
         <button onClick={() => slider?.current?.slickPrev()}
