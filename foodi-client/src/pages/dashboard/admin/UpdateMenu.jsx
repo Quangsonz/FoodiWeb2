@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import useAxiosPublic from '../../../hooks/useAxiosPublic';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import useAxiosPublic from '../../../hooks/useAxiosPublic';
 import Swal from 'sweetalert2';
 import { FaUtensils } from 'react-icons/fa';
 
@@ -12,9 +12,10 @@ const UpdateMenu = () => {
   const navigate = useNavigate();
   const [item, setItem] = useState(location.state || null);
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const axiosPublic = useAxiosPublic();
   const axiosSecure = useAxiosSecure();
+  const axiosPublic = useAxiosPublic();
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     const fetchMenuItem = async () => {
@@ -51,17 +52,22 @@ const UpdateMenu = () => {
       if (data.image && data.image[0]) {
         const formData = new FormData();
         formData.append('image', data.image[0]);
-        const res = await axiosPublic.post(image_hosting_api, formData, {
-          headers: {
-            "content-type": "multipart/form-data",
-          },
-        });
-        if (res.data.success) {
-          imageUrl = res.data.data.display_url;
+        
+        try {
+          // Use axiosPublic for image upload to imgbb
+          const res = await axiosPublic.post(image_hosting_api, formData);
+          if (res.data.success) {
+            imageUrl = res.data.data.display_url;
+          } else {
+            throw new Error('Failed to upload image');
+          }
+        } catch (imageError) {
+          console.error('Image upload error:', imageError);
+          throw new Error('Failed to upload image. Please try again.');
         }
       }
 
-      // Update menu item
+      // Update menu item using axiosSecure with PUT method
       const updatedItem = {
         name: data.name,
         category: data.category,
@@ -71,7 +77,7 @@ const UpdateMenu = () => {
       };
 
       console.log('Updating menu item:', id, updatedItem);
-      const menuRes = await axiosSecure.patch(`/menu/${id}`, updatedItem);
+      const menuRes = await axiosSecure.put(`/menu/${id}`, updatedItem);
       console.log('Update response:', menuRes);
 
       if (menuRes.data) {
@@ -105,6 +111,10 @@ const UpdateMenu = () => {
       </div>
     );
   }
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <div className="w-full md:w-[870px] px-4 mx-auto">
@@ -185,7 +195,18 @@ const UpdateMenu = () => {
             <label className="label">
               <span className="label-text">Current Image</span>
             </label>
-            <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded-lg mb-2" />
+            {imageError ? (
+              <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                <span className="text-sm text-gray-500">Image not available</span>
+              </div>
+            ) : (
+              <img 
+                src={item.image} 
+                alt={item.name} 
+                className="w-24 h-24 object-cover rounded-lg mb-2"
+                onError={handleImageError}
+              />
+            )}
             
             <label className="label">
               <span className="label-text">Update Image</span>
