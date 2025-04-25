@@ -124,8 +124,8 @@ const ProductDetail = () => {
         Swal.fire({
           position: 'center',
           icon: 'info',
-          title: 'Sản phẩm đã có trong giỏ hàng',
-          text: `Số lượng hiện tại: ${existingCartItem.quantity}`,
+          title: 'Product already in cart',
+          text: `Current quantity: ${existingCartItem.quantity}`,
           showConfirmButton: true,
           confirmButtonText: 'OK',
           timer: 2000,
@@ -244,10 +244,10 @@ const ProductDetail = () => {
           <div className="space-y-4 border-b pb-6">
             <div className="flex items-center gap-8">
               <p className="text-gray-600">
-                Tình trạng: <span className="text-green-500 font-medium">Còn hàng</span>
+              Status: <span className="text-green-500 font-medium">In stock</span>
               </p>
               <p className="text-gray-600">
-                Mã SP: <span className="font-medium">#{product._id?.slice(-6)}</span>
+              Product Code: <span className="font-medium">#{product._id?.slice(-6)}</span>
               </p>
             </div>
           </div>
@@ -265,7 +265,7 @@ const ProductDetail = () => {
           {/* Quantity and Add to Cart */}
           <div className="space-y-6 pt-4">
             <div className="flex items-center gap-6">
-              <span className="text-gray-700 font-medium">Số lượng:</span>
+              <span className="text-gray-700 font-medium">Quantity:</span>
               <div className="flex items-center border-2 rounded-lg">
                 <button 
                   onClick={handleDecrease}
@@ -291,14 +291,14 @@ const ProductDetail = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                Thêm vào giỏ hàng
+                Add to cart
               </button>
             </div>
           </div>
 
           {/* Share Section */}
           <div className="pt-6 border-t">
-            <p className="text-gray-700 font-medium mb-3">Chia sẻ sản phẩm:</p>
+            <p className="text-gray-700 font-medium mb-3">Share product:</p>
             <div className="flex gap-4">
               <button className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

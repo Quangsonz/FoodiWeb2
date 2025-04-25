@@ -42,17 +42,17 @@ const OrderSuccess = () => {
               <div className="flex items-start gap-6 mb-8">
                 <FaCheckCircle className="text-[#8EC343] text-4xl mt-1" />
                 <div>
-                  <h2 className="text-2xl font-medium mb-2">Cảm ơn bạn đã đặt hàng</h2>
+                  <h2 className="text-2xl font-medium mb-2">Thanks for ordering</h2>
                   <p className="text-gray-600 text-lg">
-                    Một email xác nhận đã được gửi tới {orderDetails.email}.<br />
-                    Xin vui lòng kiểm tra email của bạn
+                  A confirmation email has been sent to {orderDetails.email}.<br />
+                  Please check your email
                   </p>
                 </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-10">
                 <div>
-                  <h3 className="font-medium mb-4 text-lg">Thông tin mua hàng</h3>
+                  <h3 className="font-medium mb-4 text-lg">Purchase information</h3>
                   <div className="text-gray-600 space-y-2">
                     <p>{orderDetails.fullName}</p>
                     <p>{orderDetails.email}</p>
@@ -60,7 +60,7 @@ const OrderSuccess = () => {
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-4 text-lg">Địa chỉ nhận hàng</h3>
+                  <h3 className="font-medium mb-4 text-lg">Delivery address</h3>
                   <div className="text-gray-600 space-y-2">
                     <p>{orderDetails.address}</p>
                     <p>{orderDetails.province}</p>
@@ -68,13 +68,13 @@ const OrderSuccess = () => {
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-4 text-lg">Phương thức thanh toán</h3>
-                  <p className="text-gray-600">Thanh toán khi giao hàng (COD)</p>
+                  <h3 className="font-medium mb-4 text-lg">Payment method</h3>
+                  <p className="text-gray-600">Cash on Delivery (COD)</p>
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-4 text-lg">Phương thức vận chuyển</h3>
-                  <p className="text-gray-600">Giao hàng tận nơi</p>
+                  <h3 className="font-medium mb-4 text-lg">Shipping method</h3>
+                  <p className="text-gray-600">Delivery to your door</p>
                 </div>
               </div>
             </div>
@@ -84,7 +84,7 @@ const OrderSuccess = () => {
                 to="/menu"
                 className="px-8 py-3 bg-green text-white rounded hover:bg-yellow-400 transition-colors text-lg"
               >
-                Tiếp tục mua hàng
+                Continue shopping
               </Link>
             </div>
           </div>
@@ -92,7 +92,7 @@ const OrderSuccess = () => {
           {/* Right Column */}
           <div className="lg:w-[450px]">
             <div className="bg-white p-8 rounded shadow-sm">
-              <h3 className="font-medium mb-6 text-lg">Đơn hàng ({items.length})</h3>
+              <h3 className="font-medium mb-6 text-lg">Order ({items.length})</h3>
               <div className="space-y-4">
                 {items.map((item, index) => (
                   <div key={index} className="flex items-center gap-4">
@@ -111,15 +111,15 @@ const OrderSuccess = () => {
 
                 <div className="pt-4 space-y-4">
                   <div className="flex justify-between text-lg">
-                    <p>Tạm tính</p>
+                    <p>Provisional</p>
                     <p>{totalAmount.toFixed(1)}$</p>
                   </div>
                   <div className="flex justify-between text-lg">
-                    <p>Phí vận chuyển</p>
+                    <p>Shipping fee</p>
                     <p>{shippingFee > 0 ? `${shippingFee.toFixed(1)}$` : 'Chưa tính'}</p>
                   </div>
                   <div className="flex justify-between text-[#2B96CC] font-medium pt-4 border-t text-lg">
-                    <p>Tổng cộng</p>
+                    <p>Total</p>
                     <p>{(totalAmount + shippingFee).toFixed(1)}$</p>
                   </div>
                 </div>

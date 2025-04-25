@@ -66,7 +66,7 @@ const Checkout = () => {
     try {
       // Validate thông tin
       if (!shippingInfo.email || !shippingInfo.fullName || !shippingInfo.phone || !shippingInfo.address) {
-        throw new Error("Vui lòng điền đầy đủ thông tin giao hàng!");
+        throw new Error("Please fill in complete shipping information !");
       }
 
       const orderData = {
@@ -120,8 +120,8 @@ const Checkout = () => {
         Swal.fire({
           position: "center",
           icon: "success",
-          title: "Đặt hàng thành công!",
-          text: "Đơn hàng của bạn đang chờ xác nhận. Chúng tôi sẽ liên hệ sớm nhất!",
+          title: "Order successful!",
+          text: "Your order is awaiting confirmation. We will contact you soon!",
           showConfirmButton: true,
         }).then(() => {
           // Chuyển đến trang xác nhận đơn hàng
@@ -154,7 +154,7 @@ const Checkout = () => {
       Swal.fire({
         position: "center",
         icon: "error",
-        title: "Lỗi!",
+        title: "error!",
         text: error.response?.data?.message || error.message,
         showConfirmButton: true,
       });
@@ -170,7 +170,7 @@ const Checkout = () => {
         <div className="py-28 flex flex-col items-center justify-center">
           <div className="text-center px-4 space-y-7">
             <h2 className="md:text-5xl text-4xl font-bold md:leading-snug leading-snug">
-              Thanh Toán <span className="text-green">Đơn Hàng</span>
+              Thanh Toán <span className="text-green">Purchase Order</span>
             </h2>
           </div>
         </div>
@@ -182,8 +182,8 @@ const Checkout = () => {
           {/* Thông tin nhận hàng */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Thông tin nhận hàng</h2>
-              {!user && <Link to="/login" className="text-blue-600">Đăng nhập</Link>}
+              <h2 className="text-xl font-semibold">Delivery information</h2>
+              {!user && <Link to="/login" className="text-blue-600">Login</Link>}
             </div>
 
             <form id="checkout-form" className="space-y-4" onSubmit={handleSubmit}>
@@ -212,7 +212,7 @@ const Checkout = () => {
                   name="phone"
                   value={shippingInfo.phone}
                   onChange={handleInputChange}
-                  placeholder="Số điện thoại"
+                  placeholder="Phone Number"
                   className="w-full p-3 border rounded-md pr-20"
                   required
                 />
@@ -226,7 +226,7 @@ const Checkout = () => {
                 name="address"
                 value={shippingInfo.address}
                 onChange={handleInputChange}
-                placeholder="Địa chỉ"
+                placeholder="Address"
                 className="w-full p-3 border rounded-md"
                 required
               />
@@ -238,9 +238,9 @@ const Checkout = () => {
                 className="w-full p-3 border rounded-md bg-white"
                 required
               >
-                <option value="">Tỉnh thành</option>
-                <option value="hanoi">Hà Nội</option>
-                <option value="hochiminh">TP. Hồ Chí Minh</option>
+                <option value="">Province</option>
+                <option value="hanoi">Ha Noi</option>
+                <option value="hochiminh">Ho Chi Minh</option>
               </select>
 
               <select
@@ -250,21 +250,21 @@ const Checkout = () => {
                 className="w-full p-3 border rounded-md bg-white"
                 required
               >
-                <option value="">Quận huyện</option>
+                <option value="">District</option>
                 {shippingInfo.province === "hanoi" && (
                   <>
-                    <option value="ba-dinh">Ba Đình</option>
-                    <option value="hoan-kiem">Hoàn Kiếm</option>
-                    <option value="hai-ba-trung">Hai Bà Trưng</option>
-                    <option value="dong-da">Đống Đa</option>
+                    <option value="ba-dinh">Ba Dinh</option>
+                    <option value="hoan-kiem">Hoan Kiem</option>
+                    <option value="hai-ba-trung">Hai Ba Trung</option>
+                    <option value="dong-da">Dong Da</option>
                   </>
                 )}
                 {shippingInfo.province === "hochiminh" && (
                   <>
-                    <option value="quan-1">Quận 1</option>
-                    <option value="quan-2">Quận 2</option>
-                    <option value="quan-3">Quận 3</option>
-                    <option value="quan-4">Quận 4</option>
+                    <option value="quan-1">District 1</option>
+                    <option value="quan-2">District 2</option>
+                    <option value="quan-3">District 3</option>
+                    <option value="quan-4">District 4</option>
                   </>
                 )}
               </select>
@@ -273,7 +273,7 @@ const Checkout = () => {
                 name="note"
                 value={shippingInfo.note}
                 onChange={handleInputChange}
-                placeholder="Ghi chú (tùy chọn)"
+                placeholder="Note (optional)"
                 className="w-full p-3 border rounded-md h-24"
               />
             </form>
@@ -281,13 +281,13 @@ const Checkout = () => {
 
           {/* Vận chuyển */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Vận chuyển</h2>
+            <h2 className="text-xl font-semibold mb-4">Shipping</h2>
             <div className="p-4 bg-blue-50 rounded-md">
               {!shippingInfo.province ? (
-                <p className="text-gray-600">Phí vận chuyển</p>
+                <p className="text-gray-600">Shipping fee</p>
               ) : (
                 <p className="text-gray-600">
-                  Phí vận chuyển: {shippingFee.toLocaleString()}$ 
+                  Shipping fee: {shippingFee.toLocaleString()}$ 
                   {shippingInfo.province === "hanoi" ? "" : ""}
                 </p>
               )}
@@ -296,7 +296,7 @@ const Checkout = () => {
 
           {/* Thanh toán */}
           <div>
-            <h2 className="text-xl font-semibold mb-4">Thanh toán</h2>
+            <h2 className="text-xl font-semibold mb-4">Pay</h2>
             <div className="border rounded-md p-4">
               <label className="flex items-center space-x-3">
                 <input
@@ -306,7 +306,7 @@ const Checkout = () => {
                   defaultChecked
                   className="form-radio"
                 />
-                <span>Thanh toán khi giao hàng (COD)</span>
+                <span>Cash on Delivery (COD)</span>
               </label>
             </div>
           </div>
@@ -315,7 +315,7 @@ const Checkout = () => {
         {/* Right Section */}
         <div className="lg:w-1/3">
           <div className="bg-gray-50 p-6 rounded-lg">
-            <h2 className="text-xl font-semibold mb-6">Đơn hàng</h2>
+            <h2 className="text-xl font-semibold mb-6">Order</h2>
             <div className="space-y-4 mb-6">
               {cart.map((item) => (
                 <div key={item._id || item.id} className="flex items-center gap-4">
@@ -339,37 +339,37 @@ const Checkout = () => {
               ))}
             </div>
 
-            <div className="flex gap-2 mb-4">
+            {/* <div className="flex gap-2 mb-4">
               <input
                 type="text"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
-                placeholder="Nhập mã giảm giá"
+                placeholder="Enter coupon code"
                 className="flex-1 p-2 border rounded-md"
               />
               <button className="px-4 py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200">
-                Áp dụng
+                Apply
               </button>
-            </div>
+            </div> */}
 
             <div className="space-y-2 border-t pt-4">
               <div className="flex justify-between">
-                <span className="text-gray-600">Tạm tính</span>
+                <span className="text-gray-600">Provisional</span>
                 <span>{cartSubtotal.toLocaleString()}$</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Phí vận chuyển</span>
+                <span className="text-gray-600">Shipping fee</span>
                 <span>{shippingFee > 0 ? `${shippingFee.toLocaleString()}$` : 'Chưa tính'}</span>
               </div>
               <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                <span>Tổng cộng</span>
+                <span>Total</span>
                 <span className="text-red">{orderTotal.toLocaleString()}$</span>
               </div>
             </div>
 
             <div className="mt-6 space-y-4">
               <Link to="/cart-page" className="text-green hover:underline block">
-                ← Quay về giỏ hàng
+                ← Back to cart
               </Link>
               <button 
                 type="submit"
@@ -377,10 +377,10 @@ const Checkout = () => {
                 disabled={loading}
                 className="w-full py-3 bg-green text-white rounded-md hover:bg-yellow-400 disabled:opacity-50"
               >
-                {loading ? "ĐANG XỬ LÝ..." : "ĐẶT HÀNG"}
+                {loading ? "Loading..." : "Order Now"}
               </button>
               <p className="text-sm text-gray-500 text-center">
-                Đơn hàng của bạn sẽ được admin xác nhận trước khi giao hàng
+              Your order will be confirmed by admin before delivery.
               </p>
             </div>
           </div>
