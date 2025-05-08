@@ -256,7 +256,7 @@ const ProductDetail = () => {
           <div className="space-y-4 border-b pb-6">
             <div className="grid grid-cols-1 gap-4">
               <p className="text-gray-600">
-                Xuất xứ: <span className="font-medium">Việt Nam</span>
+                From: <span className="font-medium">Việt Nam</span>
               </p>
             </div>
             <p className="text-gray-700 leading-relaxed">{product.recipe}</p>

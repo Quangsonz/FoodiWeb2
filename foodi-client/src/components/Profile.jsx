@@ -77,13 +77,13 @@ const Profile = ({ user }) => {
                   <span>Menu</span>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/settings" 
                   className="flex items-center gap-3 hover:bg-green-50 hover:text-green-600 rounded-lg p-3 transition-all duration-300 group">
                   <FaCog className="text-green-500 group-hover:scale-110 transition-transform" />
                   <span>Settings</span>
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link to="/dashboard" 
                   className="flex items-center gap-3 hover:bg-green-50 hover:text-green-600 rounded-lg p-3 transition-all duration-300 group">

@@ -5,40 +5,40 @@ const AboutUs = () => {
   const coreValues = [
     {
       icon: <FaUtensils className="text-4xl text-green-600" />,
-      title: "Ẩm Thực Chất Lượng",
-      description: "Chúng tôi tự hào sử dụng những nguyên liệu tươi ngon nhất để tạo ra những món ăn tuyệt vời."
+      title: "High-Quality Cuisine",
+      description: "We take pride in using the freshest ingredients to create delicious dishes."
     },
     {
       icon: <FaUsers className="text-4xl text-green-600" />,
-      title: "Đội Ngũ Chuyên Nghiệp",
-      description: "Đội ngũ đầu bếp và nhân viên giàu kinh nghiệm, luôn tận tâm phục vụ khách hàng."
+      title: "Professional Team",
+      description: "Our experienced chefs and staff are dedicated to providing excellent service."
     },
     {
       icon: <FaStar className="text-4xl text-green-600" />,
-      title: "Dịch Vụ Tận Tâm",
-      description: "Chúng tôi cam kết mang đến trải nghiệm ẩm thực tuyệt vời nhất cho mọi khách hàng."
+      title: "Dedicated Service",
+      description: "We are committed to delivering the best culinary experience for every customer."
     },
     {
       icon: <FaTruck className="text-4xl text-green-600" />,
-      title: "Giao Hàng Nhanh Chóng",
-      description: "Dịch vụ giao hàng nhanh chóng và tin cậy, đảm bảo món ăn đến tay bạn trong tình trạng tốt nhất."
+      title: "Fast Delivery",
+      description: "Our reliable and fast delivery ensures your food arrives in the best condition."
     }
   ];
 
   const teamMembers = [
     {
       name: "Nguyễn Văn An",
-      role: "Bếp Trưởng",
+      role: "Head Chef",
       image: "https://i.ibb.co/qJCmcpC/img2.png"
     },
     {
       name: "Trần Thị Bình",
-      role: "Bếp Trưởng Bánh",
+      role: "Pastry Chef",
       image: "https://i.ibb.co/W5T6Gmj/img3.png"
     },
     {
       name: "Lê Văn Cường",
-      role: "Bếp Phó",
+      role: "Sous Chef",
       image: "https://i.ibb.co/HCrDdk6/img1.png"
     }
   ];
@@ -49,13 +49,13 @@ const AboutUs = () => {
       <div className="relative h-[400px] bg-black">
         <img 
           src="https://i.ibb.co/hfzf6CJ/banner2.jpg" 
-          alt="Nhà hàng" 
+          alt="Restaurant" 
           className="w-full h-full object-cover opacity-50"
         />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white">
-            <h1 className="text-5xl font-bold mb-4">Về Foodi</h1>
-            <p className="text-xl">Mang Hạnh Phúc Đến Từng Bữa Ăn Từ 2023</p>
+            <h1 className="text-5xl font-bold mb-4">About Foodi</h1>
+            <p className="text-xl">Bringing Happiness to Every Meal Since 2023</p>
           </div>
         </div>
       </div>
@@ -63,12 +63,12 @@ const AboutUs = () => {
       {/* Our Story Section */}
       <section className="py-16 px-4 md:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Câu Chuyện Của Chúng Tôi</h2>
+          <h2 className="text-3xl font-bold mb-6">Our Story</h2>
           <p className="text-gray-600 leading-relaxed mb-8">
-            Được thành lập vào năm 2023, Foodi đã và đang không ngừng nỗ lực mang đến những trải nghiệm ẩm thực tuyệt vời nhất cho khách hàng. 
-            Từ một nhà hàng nhỏ, chúng tôi đã phát triển thành một thương hiệu ẩm thực được yêu thích, nổi tiếng với chất lượng món ăn, 
-            không gian ấm cúng và dịch vụ chuyên nghiệp. Niềm đam mê ẩm thực và cam kết về chất lượng luôn thúc đẩy chúng tôi 
-            không ngừng đổi mới và hoàn thiện, đảm bảo mỗi bữa ăn đều là một kỷ niệm đáng nhớ.
+            Founded in 2023, Foodi has been striving to provide the best culinary experiences for our customers. 
+            Starting as a small restaurant, we have grown into a beloved culinary brand known for our high-quality dishes, 
+            cozy atmosphere, and professional service. Our passion for food and commitment to quality constantly drive us 
+            to innovate and improve, ensuring that every meal becomes a memorable experience.
           </p>
         </div>
       </section>
@@ -76,7 +76,7 @@ const AboutUs = () => {
       {/* Core Values Section */}
       <section className="bg-gray-50 py-16 px-4 md:px-8">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Giá Trị Cốt Lõi</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Our Core Values</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {coreValues.map((value, index) => (
               <div
@@ -95,7 +95,7 @@ const AboutUs = () => {
       {/* Team Section */}
       <section className="py-16 px-4 md:px-8">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Đội Ngũ Của Chúng Tôi</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Meet Our Team</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {teamMembers.map((member, index) => (
               <div
@@ -124,20 +124,19 @@ const AboutUs = () => {
       {/* Contact Section */}
       <section className="bg-gray-50 py-16 px-4 md:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Ghé Thăm Nhà Hàng</h2>
+          <h2 className="text-3xl font-bold mb-6">Visit Our Restaurant</h2>
           <p className="text-gray-600 mb-8">
-            Chúng tôi rất mong được phục vụ quý khách. Hãy đến và trải nghiệm không gian ẩm thực 
-            tuyệt vời cùng những món ăn đặc sắc của chúng tôi.
+            We look forward to serving you. Come and enjoy a great dining experience with our delicious dishes.
           </p>
           <div className="space-y-4">
             <p className="text-lg">
-              <strong>Địa chỉ:</strong> 123 Đường Ẩm Thực, Quận 1, TP.HCM
+              <strong>Address:</strong> 123 Culinary Street, District 1, Ho Chi Minh City
             </p>
             <p className="text-lg">
-              <strong>Giờ mở cửa:</strong> Thứ 2 - Chủ nhật: 10:00 - 22:00
+              <strong>Opening Hours:</strong> Monday - Sunday: 10:00 AM - 10:00 PM
             </p>
             <p className="text-lg">
-              <strong>Điện thoại:</strong> (028) 1234-5678
+              <strong>Phone:</strong> (028) 1234-5678
             </p>
           </div>
         </div>
@@ -146,4 +145,4 @@ const AboutUs = () => {
   );
 };
 
-export default AboutUs; 
+export default AboutUs;

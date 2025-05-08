@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import logo from "/logo.png";
 import { FaRegUser } from "react-icons/fa";
 import Modal from "./Modal";
@@ -13,6 +13,7 @@ const Navbar = () => {
   const [isSticky, setSticky] = useState(false);
   const {user, loading} = useAuth();
   const [cart, refetch] = useCart();
+  const detailsRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,7 +48,7 @@ const Navbar = () => {
         <Link to="/">Home</Link>
       </li>
       <li tabIndex={0}>
-        <details>
+        <details ref={detailsRef}>
           <summary>Menu</summary>
           <ul className="p-2">
             {categories.map((category, index) => (
@@ -56,6 +57,11 @@ const Navbar = () => {
                   to={category.path}
                   state={{ category: category.name !== "All" ? category.name.toLowerCase() : "all" }}
                   className="hover:text-green-500"
+                  onClick={() => {
+                    if (detailsRef.current) {
+                      detailsRef.current.open = false;
+                    }
+                  }}
                 >
                   {category.name}
                 </Link>

@@ -116,7 +116,7 @@ const OrderSuccess = () => {
                   </div>
                   <div className="flex justify-between text-lg">
                     <p>Shipping fee</p>
-                    <p>{shippingFee > 0 ? `${shippingFee.toFixed(1)}$` : 'Chưa tính'}</p>
+                    <p>{shippingFee > 0 ? `${shippingFee.toFixed(1)}$` : 'Not counted'}</p>
                   </div>
                   <div className="flex justify-between text-[#2B96CC] font-medium pt-4 border-t text-lg">
                     <p>Total</p>

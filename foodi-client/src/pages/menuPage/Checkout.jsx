@@ -359,7 +359,7 @@ const Checkout = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping fee</span>
-                <span>{shippingFee > 0 ? `${shippingFee.toLocaleString()}$` : 'Chưa tính'}</span>
+                <span>{shippingFee > 0 ? `${shippingFee.toLocaleString()}$` : 'Not counted'}</span>
               </div>
               <div className="flex justify-between text-lg font-bold pt-2 border-t">
                 <span>Total</span>

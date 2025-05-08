@@ -62,7 +62,7 @@ const SearchBar = () => {
             Swal.fire({
                 position: 'center',
                 icon: 'error',
-                title: 'Không thể chuyển đến trang chi tiết sản phẩm',
+                title: 'Cannot go to product detail page',
                 showConfirmButton: false,
                 timer: 1500,
             });
@@ -98,12 +98,12 @@ const SearchBar = () => {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Tìm kiếm món ăn..."
+                            placeholder="Search for food..."
                             className="input input-bordered w-full"
                             autoFocus
                         />
                         <button type="submit" className="btn btn-primary">
-                            Tìm
+                            Search
                         </button>
                     </form>
 
@@ -139,7 +139,7 @@ const SearchBar = () => {
 
                     {!loading && searchQuery && suggestions.length === 0 && (
                         <div className="text-center py-4 text-gray-500">
-                            Không tìm thấy kết quả phù hợp
+                            No matching results found
                         </div>
                     )}
                 </div>
